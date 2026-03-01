@@ -5,20 +5,20 @@ const API_KEY = import.meta.env.VITE_OPENWEATHER_API_KEY;
 const BASE_URL = 'https://api.openweathermap.org/data/2.5';
 
 if (!API_KEY) {
-  console.error('OpenWeatherMap API key is missing!');
+  console.warn('Weather Dashboard: VITE_OPENWEATHER_API_KEY is not defined. Features will be limited.');
 }
 
-export const fetchWeatherData = async (city) => {
+export const fetchWeatherData = async (city, units = 'metric') => {
   try {
     const response = await axios.get(`${BASE_URL}/weather`, {
       params: {
         q: city,
         appid: API_KEY,
-        units: 'metric',
+        units,
         lang: 'en'
       }
     });
-    
+
     return response.data;
   } catch (error) {
     if (error.response) {
@@ -40,18 +40,18 @@ export const fetchWeatherData = async (city) => {
   }
 };
 
-export const fetchForecastData = async (city) => {
+export const fetchForecastData = async (city, units = 'metric') => {
   try {
     const response = await axios.get(`${BASE_URL}/forecast`, {
       params: {
         q: city,
         appid: API_KEY,
-        units: 'metric',
+        units,
         cnt: 7,
         lang: 'en'
       }
     });
-    
+
     // Group forecast by day
     const dailyForecast = response.data.list.reduce((acc, item) => {
       const date = new Date(item.dt * 1000).toLocaleDateString();

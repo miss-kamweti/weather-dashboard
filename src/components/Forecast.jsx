@@ -1,55 +1,46 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import {
+  WiDaySunny, WiCloudy, WiRain, WiSnow, WiThunderstorm, WiFog
+} from 'react-icons/wi';
 
-const Forecast = ({ data, darkMode }) => {
-  const getDayName = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { weekday: 'short' });
-  };
+const getWeatherIcon = (condition) => {
+  switch (condition?.toLowerCase()) {
+    case 'clear': return <WiDaySunny />;
+    case 'clouds': return <WiCloudy />;
+    case 'rain': case 'drizzle': return <WiRain />;
+    case 'snow': return <WiSnow />;
+    case 'thunderstorm': return <WiThunderstorm />;
+    default: return <WiFog />;
+  }
+};
+
+const Forecast = ({ data, unit }) => {
+  if (!data) return null;
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay: 0.2 }}
-      className="bg-white dark:bg-gray-800 rounded-xl shadow-xl p-6"
-    >
-      <h3 className="text-xl font-semibold mb-4 dark:text-white">
-        7-Day Forecast
-      </h3>
-      
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-4">
-        {data.map((day, index) => (
-          <div
-            key={index}
-            className="text-center p-3 rounded-lg bg-gray-50 dark:bg-gray-700 hover:shadow-md transition-shadow"
-          >
-            <div className="font-semibold dark:text-white mb-2">
-              {index === 0 ? 'Today' : getDayName(day.date)}
-            </div>
-            
-            <img
-              src={`https://openweathermap.org/img/wn/${day.icon}.png`}
-              alt={day.condition}
-              className="w-12 h-12 mx-auto"
-            />
-            
-            <div className="mt-2">
-              <span className="font-bold dark:text-white">
-                {Math.round(day.tempMax)}°
-              </span>
-              <span className="text-gray-500 dark:text-gray-400 ml-1">
-                {Math.round(day.tempMin)}°
-              </span>
-            </div>
-            
-            <div className="text-xs text-gray-600 dark:text-gray-400 mt-1 capitalize">
-              {day.condition}
+    <div className="space-y-4">
+      {data.map((day, index) => (
+        <motion.div
+          key={index}
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: index * 0.1 }}
+          className="flex items-center justify-between p-4 bg-white/5 border border-white/5 rounded-xl hover:bg-white/10 transition-all cursor-default group"
+        >
+          <div className="flex items-center gap-4">
+            <span className="data-label w-12">{index === 0 ? 'Today' : day.date.split('/')[0] + '/' + day.date.split('/')[1]}</span>
+            <div className="text-2xl neon-blue group-hover:scale-110 transition-transform">
+              {getWeatherIcon(day.condition)}
             </div>
           </div>
-        ))}
-      </div>
-    </motion.div>
+          <div className="flex gap-4 items-baseline">
+            <span className="text-white font-black">{Math.round(day.tempMax)}°</span>
+            <span className="text-white/20 text-xs font-mono">{Math.round(day.tempMin)}°</span>
+          </div>
+        </motion.div>
+      ))}
+    </div>
   );
 };
 
